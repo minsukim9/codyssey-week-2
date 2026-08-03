@@ -11,9 +11,47 @@ def print_menu():
     print("=" * 40)
 
 
+def get_menu_choice():
+    while True:
+        user_input = input("선택: ").strip()
+
+        if not user_input:
+            print("⚠️ 값을 입력해 주세요.")
+            continue
+
+        try:
+            choice = int(user_input)
+        except ValueError:
+            print("⚠️ 1부터 5 사이의 숫자를 입력해 주세요.")
+            continue
+
+        if choice < 1 or choice > 5:
+            print("⚠️ 1부터 5 사이의 숫자를 입력해 주세요.")
+            continue
+
+        return choice
+
+
 def main():
-    print_menu()
+    while True:
+        print_menu()
+        choice = get_menu_choice()
+
+        if choice == 1:
+            print("📝 퀴즈 풀기 기능은 준비 중입니다.")
+        elif choice == 2:
+            print("📌 퀴즈 추가 기능은 준비 중입니다.")
+        elif choice == 3:
+            print("📋 퀴즈 목록 기능은 준비 중입니다.")
+        elif choice == 4:
+            print("🏆 점수 확인 기능은 준비 중입니다.")
+        else:
+            print("퀴즈 게임을 종료합니다.")
+            break
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (KeyboardInterrupt, EOFError):
+        print("\n프로그램을 안전하게 종료합니다.")
