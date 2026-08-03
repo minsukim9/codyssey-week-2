@@ -85,6 +85,17 @@ def get_number_input(message, min_value, max_value):
         return number
 
 
+def get_text_input(message):
+    while True:
+        user_input = input(message).strip()
+
+        if not user_input:
+            print("⚠️ 빈 값은 입력할 수 없습니다.")
+            continue
+
+        return user_input
+
+
 def get_menu_choice():
     return get_number_input("선택: ", 1, 5)
 
@@ -126,6 +137,28 @@ def play_quizzes(quizzes):
     print("=" * 40)
 
 
+def add_quiz(quizzes):
+    print()
+    print("📌 새로운 퀴즈를 추가합니다.")
+
+    question = get_text_input("문제를 입력하세요: ")
+
+    choices = []
+
+    for index in range(1, 5):
+        choice = get_text_input(f"선택지 {index}: ")
+        choices.append(choice)
+
+    answer = get_number_input("정답 번호 (1-4): ", 1, 4)
+
+    new_quiz = Quiz(question, choices, answer)
+    quizzes.append(new_quiz)
+
+    print()
+    print("✅ 퀴즈가 추가되었습니다!")
+    print(f"현재 등록된 퀴즈는 총 {len(quizzes)}개입니다.")
+
+
 def main():
     quizzes = create_default_quizzes()
 
@@ -136,7 +169,7 @@ def main():
         if choice == 1:
             play_quizzes(quizzes)
         elif choice == 2:
-            print("📌 퀴즈 추가 기능은 준비 중입니다.")
+            add_quiz(quizzes)
         elif choice == 3:
             print("📋 퀴즈 목록 기능은 준비 중입니다.")
         elif choice == 4:
