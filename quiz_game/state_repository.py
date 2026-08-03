@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from .game_record import GameRecord
 from .quiz import Quiz
 
 
@@ -16,13 +17,22 @@ class StateRepository:
 
         self.file_path = Path(file_path)
 
-    def save(self, quizzes, best_result):
+    def save(
+        self,
+        quizzes,
+        best_result,
+        score_history
+    ):
         state = {
             "quizzes": [
                 quiz.to_dict()
                 for quiz in quizzes
             ],
-            "best_result": best_result
+            "best_result": best_result,
+            "score_history": [
+                record.to_dict()
+                for record in score_history
+            ]
         }
 
         with self.file_path.open(
@@ -70,10 +80,19 @@ class StateRepository:
 
         quiz_data_list = state["quizzes"]
         best_result = state.get("best_result")
+        score_history_data = state.get(
+            "score_history",
+            []
+        )
 
         if not isinstance(quiz_data_list, list):
             raise ValueError(
                 "퀴즈 목록 형식이 올바르지 않습니다."
+            )
+
+        if not isinstance(score_history_data, list):
+            raise ValueError(
+                "점수 기록 형식이 올바르지 않습니다."
             )
 
         quizzes = [
@@ -81,9 +100,18 @@ class StateRepository:
             for quiz_data in quiz_data_list
         ]
 
+        score_history = [
+            GameRecord.from_dict(record_data)
+            for record_data in score_history_data
+        ]
+
         self._validate_best_result(best_result)
 
-        return quizzes, best_result
+        return (
+            quizzes,
+            best_result,
+            score_history
+        )
 
     def _validate_best_result(self, best_result):
         if best_result is None:
