@@ -8,7 +8,8 @@
                 "bool",
                 "str"
             ],
-            "answer": 2
+            "answer": 2,
+            "hint": "대괄호 []를 사용하는 자료형입니다."
         },
         {
             "question": "Python에서 조건문을 작성할 때 사용하는 키워드는 무엇인가요?",
@@ -18,7 +19,8 @@
                 "def",
                 "class"
             ],
-            "answer": 1
+            "answer": 1,
+            "hint": "영어로 '만약'이라는 뜻의 키워드입니다."
         },
         {
             "question": "Python에서 함수를 정의할 때 사용하는 키워드는 무엇인가요?",
@@ -28,7 +30,8 @@
                 "def",
                 "return"
             ],
-            "answer": 3
+            "answer": 3,
+            "hint": "define의 앞 세 글자를 생각해 보세요."
         },
         {
             "question": "Python에서 반복 횟수가 정해져 있을 때 주로 사용하는 반복문은 무엇인가요?",
@@ -38,7 +41,8 @@
                 "while",
                 "for"
             ],
-            "answer": 4
+            "answer": 4,
+            "hint": "정해진 범위를 순회할 때 자주 사용합니다."
         },
         {
             "question": "Python 클래스의 생성자 역할을 하는 메서드는 무엇인가요?",
@@ -48,32 +52,14 @@
                 "__start__",
                 "__class__"
             ],
-            "answer": 2
-        },
-        {
-            "question": "테스트입니다.",
-            "choices": [
-                "값 1",
-                "값 2",
-                "값 3",
-                "정답"
-            ],
-            "answer": 4
-        },
-        {
-            "question": "문제 추가 테스트",
-            "choices": [
-                "1",
-                "2",
-                "3",
-                "4"
-            ],
-            "answer": 1
+            "answer": 2,
+            "hint": "객체 생성 시 처음 호출되는 특수 메서드입니다."
         }
     ],
     "best_result": {
         "score": 100,
-        "correct_count": 5,
-        "total_count": 5
+        "correct_count": 1,
+        "total_count": 1,
+        "hint_count": 0
     }
 }

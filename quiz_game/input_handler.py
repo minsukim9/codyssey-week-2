@@ -34,3 +34,33 @@ def read_text(message):
             continue
 
         return user_input
+
+
+def read_answer(message, min_value, max_value):
+    while True:
+        user_input = input(message).strip().lower()
+
+        if not user_input:
+            print("⚠️ 값을 입력해 주세요.")
+            continue
+
+        if user_input == "h":
+            return "h"
+
+        try:
+            number = int(user_input)
+        except ValueError:
+            print(
+                f"⚠️ {min_value}부터 {max_value} 사이의 "
+                "숫자 또는 h를 입력해 주세요."
+            )
+            continue
+
+        if number < min_value or number > max_value:
+            print(
+                f"⚠️ {min_value}부터 {max_value} 사이의 "
+                "숫자를 입력해 주세요."
+            )
+            continue
+
+        return number
