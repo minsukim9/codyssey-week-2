@@ -100,12 +100,12 @@ def get_menu_choice():
     return get_number_input("선택: ", 1, 5)
 
 
-def play_quizzes(quizzes):
+def play_quizzes(quizzes, best_result):
     if not quizzes:
         print("⚠️ 등록된 퀴즈가 없습니다.")
-        return
+        return best_result
 
-    score = 0
+    correct_count = 0
     total_count = len(quizzes)
 
     print()
@@ -122,19 +122,31 @@ def play_quizzes(quizzes):
 
         if quiz.is_correct(user_answer):
             print("✅ 정답입니다!")
-            score += 1
+            correct_count += 1
         else:
             print(f"❌ 오답입니다. 정답은 {quiz.answer}번입니다.")
 
-    percentage = int(score / total_count * 100)
+    score = int(correct_count / total_count * 100)
 
     print()
     print("=" * 40)
     print(
         f"🏆 결과: {total_count}문제 중 "
-        f"{score}문제 정답! ({percentage}점)"
+        f"{correct_count}문제 정답! ({score}점)"
     )
+
+    if best_result is None or score > best_result["score"]:
+        best_result = {
+            "score": score,
+            "correct_count": correct_count,
+            "total_count": total_count
+        }
+
+        print("🎉 새로운 최고 점수입니다!")
+
     print("=" * 40)
+
+    return best_result
 
 
 def add_quiz(quizzes):
@@ -175,21 +187,38 @@ def show_quiz_list(quizzes):
     print("-" * 40)
 
 
+def show_best_score(best_result):
+    print()
+
+    if best_result is None:
+        print("⚠️ 아직 퀴즈를 풀지 않았습니다.")
+        return
+
+    print("=" * 40)
+    print(
+        f"🏆 최고 점수: {best_result['score']}점 "
+        f"({best_result['total_count']}문제 중 "
+        f"{best_result['correct_count']}문제 정답)"
+    )
+    print("=" * 40)
+
+
 def main():
     quizzes = create_default_quizzes()
+    best_result = None
 
     while True:
         print_menu()
         choice = get_menu_choice()
 
         if choice == 1:
-            play_quizzes(quizzes)
+            best_result = play_quizzes(quizzes, best_result)
         elif choice == 2:
             add_quiz(quizzes)
         elif choice == 3:
             show_quiz_list(quizzes)
         elif choice == 4:
-            print("🏆 점수 확인 기능은 준비 중입니다.")
+            show_best_score(best_result)
         else:
             print("퀴즈 게임을 종료합니다.")
             break
