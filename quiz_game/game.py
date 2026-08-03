@@ -24,7 +24,7 @@ class QuizGame:
                 choice = read_number(
                     "선택: ",
                     1,
-                    5
+                    6
                 )
 
                 if choice == 1:
@@ -34,6 +34,8 @@ class QuizGame:
                 elif choice == 3:
                     self.show_quiz_list()
                 elif choice == 4:
+                    self.delete_quiz()
+                elif choice == 5:
                     self.show_best_score()
                 else:
                     self._save_state()
@@ -174,6 +176,49 @@ class QuizGame:
 
         print("-" * 40)
 
+    def delete_quiz(self):
+        if not self.quizzes:
+            print()
+            print("⚠️ 삭제할 퀴즈가 없습니다.")
+            return
+
+        self.show_quiz_list()
+
+        quiz_number = read_number(
+            f"삭제할 퀴즈 번호를 입력하세요 "
+            f"(1-{len(self.quizzes)}): ",
+            1,
+            len(self.quizzes)
+        )
+
+        quiz_index = quiz_number - 1
+        selected_quiz = self.quizzes[quiz_index]
+
+        print()
+        print("🗑️ 선택한 퀴즈")
+        print(f"[{quiz_number}] {selected_quiz.question}")
+
+        confirmation = read_number(
+            "정말 삭제하시겠습니까? (1: 예, 2: 아니요): ",
+            1,
+            2
+        )
+
+        if confirmation == 2:
+            print("퀴즈 삭제를 취소했습니다.")
+            return
+
+        deleted_quiz = self.quizzes.pop(quiz_index)
+
+        self._save_state()
+
+        print()
+        print(f"✅ 퀴즈가 삭제되었습니다: {deleted_quiz.question}")
+        print(
+            f"현재 등록된 퀴즈는 "
+            f"총 {len(self.quizzes)}개입니다."
+        )
+
     def show_best_score(self):
         print()
 
@@ -301,8 +346,9 @@ class QuizGame:
         print("1. 퀴즈 풀기")
         print("2. 퀴즈 추가")
         print("3. 퀴즈 목록")
-        print("4. 점수 확인")
-        print("5. 종료")
+        print("4. 퀴즈 삭제")
+        print("5. 점수 확인")
+        print("6. 종료")
         print("=" * 40)
 
     def _print_quiz(self, quiz_index, quiz):
