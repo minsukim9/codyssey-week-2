@@ -159,6 +159,22 @@ def add_quiz(quizzes):
     print(f"현재 등록된 퀴즈는 총 {len(quizzes)}개입니다.")
 
 
+def show_quiz_list(quizzes):
+    print()
+
+    if not quizzes:
+        print("⚠️ 등록된 퀴즈가 없습니다.")
+        return
+
+    print(f"📋 등록된 퀴즈 목록 (총 {len(quizzes)}개)")
+    print("-" * 40)
+
+    for index, quiz in enumerate(quizzes, start=1):
+        print(f"[{index}] {quiz.question}")
+
+    print("-" * 40)
+
+
 def main():
     quizzes = create_default_quizzes()
 
@@ -171,7 +187,7 @@ def main():
         elif choice == 2:
             add_quiz(quizzes)
         elif choice == 3:
-            print("📋 퀴즈 목록 기능은 준비 중입니다.")
+            show_quiz_list(quizzes)
         elif choice == 4:
             print("🏆 점수 확인 기능은 준비 중입니다.")
         else:
