@@ -1,0 +1,69 @@
+{
+    "quizzes": [
+        {
+            "question": "Python에서 여러 값을 순서대로 저장하는 자료형은 무엇인가요?",
+            "choices": [
+                "int",
+                "list",
+                "bool",
+                "str"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "Python에서 조건문을 작성할 때 사용하는 키워드는 무엇인가요?",
+            "choices": [
+                "if",
+                "for",
+                "def",
+                "class"
+            ],
+            "answer": 1
+        },
+        {
+            "question": "Python에서 함수를 정의할 때 사용하는 키워드는 무엇인가요?",
+            "choices": [
+                "func",
+                "method",
+                "def",
+                "return"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "Python에서 반복 횟수가 정해져 있을 때 주로 사용하는 반복문은 무엇인가요?",
+            "choices": [
+                "if",
+                "try",
+                "while",
+                "for"
+            ],
+            "answer": 4
+        },
+        {
+            "question": "Python 클래스의 생성자 역할을 하는 메서드는 무엇인가요?",
+            "choices": [
+                "__main__",
+                "__init__",
+                "__start__",
+                "__class__"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "테스트입니다.",
+            "choices": [
+                "값 1",
+                "값 2",
+                "값 3",
+                "정답"
+            ],
+            "answer": 4
+        }
+    ],
+    "best_result": {
+        "score": 100,
+        "correct_count": 5,
+        "total_count": 5
+    }
+}
