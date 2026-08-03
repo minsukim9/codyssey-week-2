@@ -1,12 +1,14 @@
 import random
 
 from .default_quizzes import create_default_quizzes
-from .input_handler import read_number, read_text
+from .input_handler import read_answer, read_number, read_text
 from .quiz import Quiz
 from .state_repository import StateDataError, StateRepository
 
 
 class QuizGame:
+    HINT_PENALTY = 5
+
     def __init__(self, repository=None):
         self.repository = repository or StateRepository()
         self.quizzes = []
@@ -59,11 +61,16 @@ class QuizGame:
         )
 
         correct_count = 0
+        hint_count = 0
         total_count = len(selected_quizzes)
 
         print()
         print(f"📝 퀴즈를 시작합니다! (총 {total_count}문제)")
         print("🔀 문제 순서는 무작위로 출제됩니다.")
+        print(
+            f"💡 힌트를 사용하려면 h를 입력하세요. "
+            f"(힌트 1회당 {self.HINT_PENALTY}점 차감)"
+        )
 
         for quiz_index, quiz in enumerate(
             selected_quizzes,
@@ -71,11 +78,12 @@ class QuizGame:
         ):
             self._print_quiz(quiz_index, quiz)
 
-            user_answer = read_number(
-                "정답 입력: ",
-                1,
-                Quiz.CHOICE_COUNT
+            user_answer, hint_used = self._read_quiz_answer(
+                quiz
             )
+
+            if hint_used:
+                hint_count += 1
 
             if quiz.is_correct(user_answer):
                 print("✅ 정답입니다!")
@@ -88,18 +96,21 @@ class QuizGame:
 
         score = self._calculate_score(
             correct_count,
-            total_count
+            total_count,
+            hint_count
         )
 
         self._print_result(
             correct_count,
             total_count,
+            hint_count,
             score
         )
 
         is_new_best = self._update_best_result(
             correct_count,
             total_count,
+            hint_count,
             score
         )
 
@@ -123,10 +134,13 @@ class QuizGame:
             Quiz.CHOICE_COUNT
         )
 
+        hint = read_text("힌트를 입력하세요: ")
+
         new_quiz = Quiz(
             question,
             choices,
-            answer
+            answer,
+            hint
         )
 
         self.quizzes.append(new_quiz)
@@ -170,6 +184,7 @@ class QuizGame:
         score = self.best_result["score"]
         correct_count = self.best_result["correct_count"]
         total_count = self.best_result["total_count"]
+        hint_count = self.best_result.get("hint_count", 0)
 
         print("=" * 40)
         print(
@@ -177,6 +192,7 @@ class QuizGame:
             f"({total_count}문제 중 "
             f"{correct_count}문제 정답)"
         )
+        print(f"💡 힌트 사용: {hint_count}회")
         print("=" * 40)
 
     def _load_state(self):
@@ -241,6 +257,30 @@ class QuizGame:
             total_quiz_count
         )
 
+    def _read_quiz_answer(self, quiz):
+        hint_used = False
+
+        while True:
+            user_input = read_answer(
+                "정답 입력 (1-4, h: 힌트): ",
+                1,
+                Quiz.CHOICE_COUNT
+            )
+
+            if user_input != "h":
+                return user_input, hint_used
+
+            if hint_used:
+                print("⚠️ 이미 이 문제의 힌트를 사용했습니다.")
+                continue
+
+            if quiz.hint is None:
+                print("⚠️ 이 문제에는 등록된 힌트가 없습니다.")
+                continue
+
+            print(f"💡 힌트: {quiz.hint}")
+            hint_used = True
+
     def _read_choices(self):
         choices = []
 
@@ -278,26 +318,54 @@ class QuizGame:
         ):
             print(f"{choice_index}. {choice}")
 
-    def _calculate_score(self, correct_count, total_count):
-        return int(correct_count / total_count * 100)
+    def _calculate_score(
+        self,
+        correct_count,
+        total_count,
+        hint_count
+    ):
+        original_score = int(
+            correct_count / total_count * 100
+        )
+
+        hint_penalty = (
+            hint_count * self.HINT_PENALTY
+        )
+
+        return max(
+            0,
+            original_score - hint_penalty
+        )
 
     def _print_result(
         self,
         correct_count,
         total_count,
+        hint_count,
         score
     ):
         print()
         print("=" * 40)
         print(
             f"🏆 결과: {total_count}문제 중 "
-            f"{correct_count}문제 정답! ({score}점)"
+            f"{correct_count}문제 정답!"
         )
+
+        if hint_count > 0:
+            penalty = hint_count * self.HINT_PENALTY
+
+            print(
+                f"💡 힌트 사용: {hint_count}회 "
+                f"(-{penalty}점)"
+            )
+
+        print(f"최종 점수: {score}점")
 
     def _update_best_result(
         self,
         correct_count,
         total_count,
+        hint_count,
         score
     ):
         if (
@@ -309,7 +377,8 @@ class QuizGame:
         self.best_result = {
             "score": score,
             "correct_count": correct_count,
-            "total_count": total_count
+            "total_count": total_count,
+            "hint_count": hint_count
         }
 
         return True

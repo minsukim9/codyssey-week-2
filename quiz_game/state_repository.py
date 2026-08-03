@@ -64,13 +64,17 @@ class StateRepository:
 
     def _parse_state(self, state):
         if not isinstance(state, dict):
-            raise ValueError("저장 데이터는 객체 형태여야 합니다.")
+            raise ValueError(
+                "저장 데이터는 객체 형태여야 합니다."
+            )
 
         quiz_data_list = state["quizzes"]
         best_result = state.get("best_result")
 
         if not isinstance(quiz_data_list, list):
-            raise ValueError("퀴즈 목록 형식이 올바르지 않습니다.")
+            raise ValueError(
+                "퀴즈 목록 형식이 올바르지 않습니다."
+            )
 
         quizzes = [
             Quiz.from_dict(quiz_data)
@@ -86,7 +90,9 @@ class StateRepository:
             return
 
         if not isinstance(best_result, dict):
-            raise ValueError("최고 점수 형식이 올바르지 않습니다.")
+            raise ValueError(
+                "최고 점수 형식이 올바르지 않습니다."
+            )
 
         try:
             score = best_result["score"]
@@ -97,24 +103,45 @@ class StateRepository:
                 "최고 점수 데이터에 필요한 필드가 없습니다."
             ) from error
 
+        hint_count = best_result.get("hint_count", 0)
+
         values = [
             score,
             correct_count,
-            total_count
+            total_count,
+            hint_count
         ]
 
         if not all(type(value) is int for value in values):
-            raise ValueError("최고 점수 값은 숫자여야 합니다.")
+            raise ValueError(
+                "최고 점수 값은 숫자여야 합니다."
+            )
+
+        if score < 0 or score > 100:
+            raise ValueError(
+                "점수 범위가 올바르지 않습니다."
+            )
 
         if total_count <= 0:
-            raise ValueError("전체 문제 수가 올바르지 않습니다.")
+            raise ValueError(
+                "전체 문제 수가 올바르지 않습니다."
+            )
 
         if correct_count < 0 or correct_count > total_count:
-            raise ValueError("정답 개수가 올바르지 않습니다.")
+            raise ValueError(
+                "정답 개수가 올바르지 않습니다."
+            )
 
-        expected_score = int(
+        if hint_count < 0 or hint_count > total_count:
+            raise ValueError(
+                "힌트 사용 횟수가 올바르지 않습니다."
+            )
+
+        original_score = int(
             correct_count / total_count * 100
         )
 
-        if score != expected_score:
-            raise ValueError("저장된 점수 계산이 올바르지 않습니다.")
+        if score > original_score:
+            raise ValueError(
+                "저장된 점수가 올바르지 않습니다."
+            )
