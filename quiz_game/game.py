@@ -1,6 +1,8 @@
 import random
+from datetime import datetime
 
 from .default_quizzes import create_default_quizzes
+from .game_record import GameRecord
 from .input_handler import read_answer, read_number, read_text
 from .quiz import Quiz
 from .state_repository import StateDataError, StateRepository
@@ -13,6 +15,7 @@ class QuizGame:
         self.repository = repository or StateRepository()
         self.quizzes = []
         self.best_result = None
+        self.score_history = []
 
         self._load_state()
 
@@ -24,7 +27,7 @@ class QuizGame:
                 choice = read_number(
                     "선택: ",
                     1,
-                    6
+                    7
                 )
 
                 if choice == 1:
@@ -37,6 +40,8 @@ class QuizGame:
                     self.delete_quiz()
                 elif choice == 5:
                     self.show_best_score()
+                elif choice == 6:
+                    self.show_score_history()
                 else:
                     self._save_state()
                     print("퀴즈 게임을 종료합니다.")
@@ -103,6 +108,13 @@ class QuizGame:
         )
 
         self._print_result(
+            correct_count,
+            total_count,
+            hint_count,
+            score
+        )
+
+        self._add_score_record(
             correct_count,
             total_count,
             hint_count,
@@ -240,15 +252,53 @@ class QuizGame:
         print(f"💡 힌트 사용: {hint_count}회")
         print("=" * 40)
 
+    def show_score_history(self):
+        print()
+
+        if not self.score_history:
+            print("⚠️ 저장된 점수 기록이 없습니다.")
+            return
+
+        print(
+            f"📊 점수 기록 "
+            f"(총 {len(self.score_history)}회)"
+        )
+        print("=" * 40)
+
+        recent_history = reversed(self.score_history)
+
+        for index, record in enumerate(
+            recent_history,
+            start=1
+        ):
+            played_at = self._format_played_at(
+                record.played_at
+            )
+
+            print(f"[{index}] {played_at}")
+            print(
+                f"    점수: {record.score}점 | "
+                f"{record.total_count}문제 중 "
+                f"{record.correct_count}문제 정답"
+            )
+            print(
+                f"    힌트 사용: "
+                f"{record.hint_count}회"
+            )
+            print("-" * 40)
+
     def _load_state(self):
         try:
-            self.quizzes, self.best_result = (
-                self.repository.load()
-            )
+            (
+                self.quizzes,
+                self.best_result,
+                self.score_history
+            ) = self.repository.load()
 
             print(
                 f"📂 저장된 데이터를 불러왔습니다. "
-                f"(퀴즈 {len(self.quizzes)}개)"
+                f"(퀴즈 {len(self.quizzes)}개, "
+                f"게임 기록 {len(self.score_history)}개)"
             )
 
         except FileNotFoundError:
@@ -277,7 +327,8 @@ class QuizGame:
         try:
             self.repository.save(
                 self.quizzes,
-                self.best_result
+                self.best_result,
+                self.score_history
             )
         except OSError as error:
             print(f"⚠️ 데이터를 저장하지 못했습니다: {error}")
@@ -285,6 +336,7 @@ class QuizGame:
     def _reset_to_default_state(self):
         self.quizzes = create_default_quizzes()
         self.best_result = None
+        self.score_history = []
 
     def _select_quiz_count(self):
         total_quiz_count = len(self.quizzes)
@@ -338,6 +390,38 @@ class QuizGame:
 
         return choices
 
+    def _add_score_record(
+        self,
+        correct_count,
+        total_count,
+        hint_count,
+        score
+    ):
+        played_at = (
+            datetime.now()
+            .astimezone()
+            .isoformat(timespec="seconds")
+        )
+
+        record = GameRecord(
+            played_at=played_at,
+            score=score,
+            correct_count=correct_count,
+            total_count=total_count,
+            hint_count=hint_count
+        )
+
+        self.score_history.append(record)
+
+    def _format_played_at(self, played_at):
+        played_datetime = datetime.fromisoformat(
+            played_at
+        )
+
+        return played_datetime.strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
     def _print_menu(self):
         print()
         print("=" * 40)
@@ -347,8 +431,9 @@ class QuizGame:
         print("2. 퀴즈 추가")
         print("3. 퀴즈 목록")
         print("4. 퀴즈 삭제")
-        print("5. 점수 확인")
-        print("6. 종료")
+        print("5. 최고 점수")
+        print("6. 점수 기록")
+        print("7. 종료")
         print("=" * 40)
 
     def _print_quiz(self, quiz_index, quiz):

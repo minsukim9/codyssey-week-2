@@ -61,5 +61,14 @@
         "correct_count": 1,
         "total_count": 1,
         "hint_count": 0
-    }
+    },
+    "score_history": [
+        {
+            "played_at": "2026-08-03T20:18:50+09:00",
+            "score": 100,
+            "correct_count": 1,
+            "total_count": 1,
+            "hint_count": 0
+        }
+    ]
 }
