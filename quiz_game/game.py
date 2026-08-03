@@ -1,3 +1,5 @@
+import random
+
 from .default_quizzes import create_default_quizzes
 from .input_handler import read_number, read_text
 from .quiz import Quiz
@@ -49,14 +51,20 @@ class QuizGame:
             print("⚠️ 등록된 퀴즈가 없습니다.")
             return
 
+        shuffled_quizzes = random.sample(
+            self.quizzes,
+            k=len(self.quizzes)
+        )
+
         correct_count = 0
-        total_count = len(self.quizzes)
+        total_count = len(shuffled_quizzes)
 
         print()
         print(f"📝 퀴즈를 시작합니다! (총 {total_count}문제)")
+        print("🔀 문제 순서는 무작위로 출제됩니다.")
 
         for quiz_index, quiz in enumerate(
-            self.quizzes,
+            shuffled_quizzes,
             start=1
         ):
             self._print_quiz(quiz_index, quiz)
