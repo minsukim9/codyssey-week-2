@@ -1,3 +1,20 @@
+class Quiz:
+    def __init__(self, question, choices, answer):
+        self.question = question
+        self.choices = choices
+        self.answer = answer
+
+    def display(self):
+        print()
+        print(self.question)
+
+        for index, choice in enumerate(self.choices, start=1):
+            print(f"{index}. {choice}")
+
+    def is_correct(self, user_answer):
+        return self.answer == user_answer
+
+
 def print_menu():
     print()
     print("=" * 40)
