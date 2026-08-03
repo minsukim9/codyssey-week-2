@@ -51,20 +51,22 @@ class QuizGame:
             print("⚠️ 등록된 퀴즈가 없습니다.")
             return
 
-        shuffled_quizzes = random.sample(
+        quiz_count = self._select_quiz_count()
+
+        selected_quizzes = random.sample(
             self.quizzes,
-            k=len(self.quizzes)
+            k=quiz_count
         )
 
         correct_count = 0
-        total_count = len(shuffled_quizzes)
+        total_count = len(selected_quizzes)
 
         print()
         print(f"📝 퀴즈를 시작합니다! (총 {total_count}문제)")
         print("🔀 문제 순서는 무작위로 출제됩니다.")
 
         for quiz_index, quiz in enumerate(
-            shuffled_quizzes,
+            selected_quizzes,
             start=1
         ):
             self._print_quiz(quiz_index, quiz)
@@ -222,6 +224,22 @@ class QuizGame:
     def _reset_to_default_state(self):
         self.quizzes = create_default_quizzes()
         self.best_result = None
+
+    def _select_quiz_count(self):
+        total_quiz_count = len(self.quizzes)
+
+        print()
+        print(
+            f"📚 현재 등록된 퀴즈는 "
+            f"총 {total_quiz_count}개입니다."
+        )
+
+        return read_number(
+            f"몇 문제를 풀겠습니까? "
+            f"(1-{total_quiz_count}): ",
+            1,
+            total_quiz_count
+        )
 
     def _read_choices(self):
         choices = []
