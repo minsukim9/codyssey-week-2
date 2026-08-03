@@ -58,34 +58,83 @@ def print_menu():
     print("=" * 40)
 
 
-def get_menu_choice():
+def get_number_input(message, min_value, max_value):
     while True:
-        user_input = input("선택: ").strip()
+        user_input = input(message).strip()
 
         if not user_input:
             print("⚠️ 값을 입력해 주세요.")
             continue
 
         try:
-            choice = int(user_input)
+            number = int(user_input)
         except ValueError:
-            print("⚠️ 1부터 5 사이의 숫자를 입력해 주세요.")
+            print(
+                f"⚠️ {min_value}부터 {max_value} 사이의 "
+                "숫자를 입력해 주세요."
+            )
             continue
 
-        if choice < 1 or choice > 5:
-            print("⚠️ 1부터 5 사이의 숫자를 입력해 주세요.")
+        if number < min_value or number > max_value:
+            print(
+                f"⚠️ {min_value}부터 {max_value} 사이의 "
+                "숫자를 입력해 주세요."
+            )
             continue
 
-        return choice
+        return number
+
+
+def get_menu_choice():
+    return get_number_input("선택: ", 1, 5)
+
+
+def play_quizzes(quizzes):
+    if not quizzes:
+        print("⚠️ 등록된 퀴즈가 없습니다.")
+        return
+
+    score = 0
+    total_count = len(quizzes)
+
+    print()
+    print(f"📝 퀴즈를 시작합니다! (총 {total_count}문제)")
+
+    for index, quiz in enumerate(quizzes, start=1):
+        print()
+        print("-" * 40)
+        print(f"[문제 {index}]")
+
+        quiz.display()
+
+        user_answer = get_number_input("정답 입력: ", 1, 4)
+
+        if quiz.is_correct(user_answer):
+            print("✅ 정답입니다!")
+            score += 1
+        else:
+            print(f"❌ 오답입니다. 정답은 {quiz.answer}번입니다.")
+
+    percentage = int(score / total_count * 100)
+
+    print()
+    print("=" * 40)
+    print(
+        f"🏆 결과: {total_count}문제 중 "
+        f"{score}문제 정답! ({percentage}점)"
+    )
+    print("=" * 40)
 
 
 def main():
+    quizzes = create_default_quizzes()
+
     while True:
         print_menu()
         choice = get_menu_choice()
 
         if choice == 1:
-            print("📝 퀴즈 풀기 기능은 준비 중입니다.")
+            play_quizzes(quizzes)
         elif choice == 2:
             print("📌 퀴즈 추가 기능은 준비 중입니다.")
         elif choice == 3:
